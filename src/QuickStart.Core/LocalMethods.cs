@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-
+using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace QuickStart.Core
 {
     public class LocalMethods
@@ -18,6 +21,14 @@ namespace QuickStart.Core
         public async Task<object> UseDynamicInput(dynamic input)
         {
             return $".NET Core welcomes {input}";
+        }
+
+        
+        public async Task<object> ExecuteCode(string code)
+        {
+            Task<ScriptState<object>> scriptState = null;
+            scriptState = scriptState == null ? CSharpScript.RunAsync(code) : scriptState.Result.ContinueWithAsync(code);
+            return (await scriptState).ReturnValue;
         }
     }
 }

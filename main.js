@@ -12,7 +12,7 @@ if(version !== 'standard')
 var edge = require('edge-js');
 
 var baseDll = path.join(baseNetAppPath, namespace + '.dll');
-
+console.log(baseDll);
 var localTypeName = namespace + '.LocalMethods';
 var externalTypeName = namespace + '.ExternalMethods';
 
@@ -33,7 +33,11 @@ var useDynamicInput = edge.func({
     typeName: localTypeName,
     methodName: 'UseDynamicInput'
 });
-
+var executeCode = edge.func({
+    assemblyFile: baseDll,
+    typeName: localTypeName,
+    methodName: 'ExecuteCode'
+});
 var getPerson = edge.func({
     assemblyFile: baseDll,
     typeName: externalTypeName,
@@ -71,3 +75,29 @@ getPerson('', function(error, result) {
     console.log(externalTypeName + '.GetPersonInfo');
     console.log(result);
 });
+
+executeCode(getSelectedText(), function (error, result) { 
+    if(error) throw error;
+    console.log(result); 
+});
+
+        
+function getSelectedText() {
+    
+    selectedText = heredoc(function(){/*
+        public class Hello
+        {
+            public string HelloWorld()
+            {
+                return "Hello World";
+            }
+        }
+        new Hello().HelloWorld()
+ */});
+    console.log(selectedText);
+    return selectedText;
+
+}
+function heredoc(fn) {
+    return fn.toString().split('\n').slice(1,-1).join('\n') + '\n'
+}
